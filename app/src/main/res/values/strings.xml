@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">LeafCare</string>
+    <string name="app_tagline">Nhận diện bệnh lá cây nhanh chóng &amp; chính xác</string>
+    <string name="start_button">Bắt đầu</string>
+    <string name="take_photo">Chụp ảnh lá</string>
+    <string name="choose_photo">Chọn ảnh từ thư viện</string>
+    <string name="recent_diagnosis">Lịch sử chẩn đoán gần đây</string>
+    <string name="home">Trang chủ</string>
+    <string name="knowledge">Kiến thức cây trồng</string>
+    <string name="settings">Cài đặt</string>
+    <string name="capture_photo">Chụp ảnh</string>
+    <string name="confirm_photo">Xác nhận</string>
+    <string name="diagnosis_result">Kết quả chẩn đoán</string>
+    <string name="confidence">Độ tin cậy</string>
+    <string name="treatment_suggestions">Gợi ý xử lý</string>
+    <string name="rediagnose">Chẩn đoán lại</string>
+    <string name="back_to_home">Quay lại trang chủ</string>
+    <string name="normal_leaf">Lá bình thường</string>
+    <string name="disease_detected">Phát hiện bệnh</string>
+</resources>
