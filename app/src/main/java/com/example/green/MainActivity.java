@@ -4,12 +4,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,6 +19,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.IOException;
 import java.io.InputStream;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+
 
 public class MainActivity extends AppCompatActivity {
     
@@ -38,11 +38,17 @@ public class MainActivity extends AppCompatActivity {
     
     private LeafCareAI leafCareAI;
     private Bitmap currentImage;
+
+    private FrameLayout containerLayout;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
+        // Gắn layout chính
+        setContentView(R.layout.activity_main);
+
+        containerLayout = findViewById(R.id.containerLayout);
         // Initialize AI model
         leafCareAI = new LeafCareAI(this);
         
@@ -78,116 +84,55 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         );
-        
-        createUI();
+        toolBar();
+        createHome();
     }
-    
-    private void createUI() {
-        // Main container
-        LinearLayout mainLayout = new LinearLayout(this);
-        mainLayout.setOrientation(LinearLayout.VERTICAL);
-        mainLayout.setGravity(Gravity.CENTER);
-        mainLayout.setBackgroundColor(0xFF2E7D32); // Green background
-        mainLayout.setPadding(32, 64, 32, 64);
-        
-        // Title
-        TextView titleText = new TextView(this);
-        titleText.setText("🌿 LeafCare AI");
-        titleText.setTextSize(32);
-        titleText.setTextColor(0xFFFFFFFF);
-        titleText.setGravity(Gravity.CENTER);
-        titleText.setPadding(0, 0, 0, 32);
-        
-        // Subtitle
-        TextView subtitleText = new TextView(this);
-        subtitleText.setText("AI phân tích bệnh lá cây chính xác");
-        subtitleText.setTextSize(16);
-        subtitleText.setTextColor(0xFFE8F5E8);
-        subtitleText.setGravity(Gravity.CENTER);
-        subtitleText.setPadding(0, 0, 0, 48);
-        
-        // Image preview
-        imagePreview = new ImageView(this);
-        imagePreview.setLayoutParams(new LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, 
-            400
-        ));
-        imagePreview.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        imagePreview.setBackgroundColor(0xFF1B5E20);
-        imagePreview.setVisibility(View.GONE);
-        
-        // Loading text
-        loadingText = new TextView(this);
-        loadingText.setText("🤖 AI đang phân tích...");
-        loadingText.setTextSize(18);
-        loadingText.setTextColor(0xFFFFEB3B);
-        loadingText.setGravity(Gravity.CENTER);
-        loadingText.setPadding(16, 16, 16, 16);
-        loadingText.setVisibility(View.GONE);
-        
-        // Result layout
-        resultLayout = new LinearLayout(this);
-        resultLayout.setOrientation(LinearLayout.VERTICAL);
-        resultLayout.setGravity(Gravity.CENTER);
-        resultLayout.setPadding(16, 16, 16, 16);
-        resultLayout.setVisibility(View.GONE);
-        
-        resultText = new TextView(this);
-        resultText.setTextSize(20);
-        resultText.setGravity(Gravity.CENTER);
-        resultText.setPadding(16, 16, 16, 16);
-        
-        resultLayout.addView(resultText);
-        
-        // Buttons container
-        LinearLayout buttonContainer = new LinearLayout(this);
-        buttonContainer.setOrientation(LinearLayout.HORIZONTAL);
-        buttonContainer.setGravity(Gravity.CENTER);
-        buttonContainer.setPadding(0, 32, 0, 0);
-        
-        // Camera button
-        cameraButton = new Button(this);
-        cameraButton.setText("📷 Chụp ảnh");
-        cameraButton.setTextSize(16);
-        cameraButton.setBackgroundColor(0xFF4CAF50);
-        cameraButton.setTextColor(0xFFFFFFFF);
-        cameraButton.setPadding(24, 16, 24, 16);
+
+    private void toolBar() {
+        LinearLayout toolbar = findViewById(R.id.customToolbar);
+        LinearLayout btnHome = toolbar.findViewById(R.id.btnHome);
+        LinearLayout btnHistory = toolbar.findViewById(R.id.btnHistory);
+
+        btnHome.setOnClickListener(v -> createHome());
+        btnHistory.setOnClickListener(v -> createHistory());
+    }
+
+
+
+
+    private void createHome() {
+        containerLayout.removeAllViews();
+        View homeView = getLayoutInflater().inflate(R.layout.layout_home, containerLayout, false);
+        containerLayout.addView(homeView);
+
+        // Ánh xạ các view từ homeView thay vì từ activity
+        imagePreview = homeView.findViewById(R.id.imagePreview);
+        loadingText = homeView.findViewById(R.id.loadingText);
+        resultLayout = homeView.findViewById(R.id.resultLayout);
+        resultText = homeView.findViewById(R.id.resultText);
+
+        cameraButton = homeView.findViewById(R.id.cameraButton);
+        galleryButton = homeView.findViewById(R.id.galleryButton);
+        analyzeButton = homeView.findViewById(R.id.analyzeButton);
+
+        // Gán sự kiện
         cameraButton.setOnClickListener(v -> openCamera());
-        
-        // Gallery button
-        galleryButton = new Button(this);
-        galleryButton.setText("🖼️ Chọn ảnh");
-        galleryButton.setTextSize(16);
-        galleryButton.setBackgroundColor(0xFF2196F3);
-        galleryButton.setTextColor(0xFFFFFFFF);
-        galleryButton.setPadding(24, 16, 24, 16);
         galleryButton.setOnClickListener(v -> openGallery());
-        
-        // Analyze button
-        analyzeButton = new Button(this);
-        analyzeButton.setText("🔍 AI Phân tích");
-        analyzeButton.setTextSize(16);
-        analyzeButton.setBackgroundColor(0xFFFF9800);
-        analyzeButton.setTextColor(0xFFFFFFFF);
-        analyzeButton.setPadding(24, 16, 24, 16);
-        analyzeButton.setVisibility(View.GONE);
         analyzeButton.setOnClickListener(v -> analyzeImage());
-        
-        // Add buttons to container
-        buttonContainer.addView(cameraButton);
-        buttonContainer.addView(galleryButton);
-        buttonContainer.addView(analyzeButton);
-        
-        // Add all views to main layout
-        mainLayout.addView(titleText);
-        mainLayout.addView(subtitleText);
-        mainLayout.addView(imagePreview);
-        mainLayout.addView(loadingText);
-        mainLayout.addView(resultLayout);
-        mainLayout.addView(buttonContainer);
-        
-        setContentView(mainLayout);
     }
+
+
+    private void createHistory() {
+        containerLayout.removeAllViews();
+        View historyView = getLayoutInflater().inflate(R.layout.layout_history, containerLayout, false);
+        containerLayout.addView(historyView);
+
+        // Nếu trong layout_history.xml có các view khác, bạn ánh xạ từ historyView
+        // Ví dụ:
+        // TextView historyText = historyView.findViewById(R.id.historyText);
+        // RecyclerView historyList = historyView.findViewById(R.id.historyList);
+    }
+
     
     private void openCamera() {
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);

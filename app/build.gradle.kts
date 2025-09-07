@@ -45,7 +45,8 @@ dependencies {
     // PyTorch Mobile
     implementation("org.pytorch:pytorch_android:1.13.1")
     implementation("org.pytorch:pytorch_android_torchvision:1.13.1")
-    
+    implementation(libs.fragment)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

@@ -139,12 +139,10 @@ public class LeafCareAI {
             String result;
             if (predictedClass == 0) {
                 // Healthy
-                result = String.format("🌱 %s - Lá cây khỏe mạnh! (%s)", 
-                    className, confidenceText);
+                result = String.format("🌱 %s - Lá cây khỏe mạnh!", className);
             } else {
                 // Disease
-                result = String.format("🔴 %s - Cần xử lý ngay (%s)", 
-                    className, confidenceText);
+                result = String.format("🔴 %s - Cần xử lý ngay", className);
             }
             
             Log.d(TAG, "Final result: " + result);
