@@ -1,4 +1,12 @@
-<?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
 
-</selector>
+    <solid android:color="@android:color/white"/> <!-- màu nền -->
+    <stroke
+        android:width="0dp"
+        android:color="#CCCCCC"/> <!-- viền nếu muốn -->
+
+    <size
+        android:width="76dp"
+        android:height="76dp"/> <!-- cố định thành hình tròn -->
+</shape>

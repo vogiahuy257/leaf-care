@@ -10,66 +10,129 @@
     <FrameLayout
         android:id="@+id/containerLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent" >
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/containerChatBot"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:layout_above="@+id/bottomContainer"
+        android:layout_marginBottom="0dp"
+        android:background="@android:color/white"
+        android:visibility="gone"
+        android:elevation="4dp">
+
+        <!-- Nội dung chat -->
+<!--        co1 the code hien logic trong java hoac them truoc tiep vao-->
+
+    </FrameLayout>
+
 
     <LinearLayout
-        android:id="@+id/customToolbar"
+        android:id="@+id/bottomContainer"
         android:layout_width="match_parent"
-        android:layout_height="76dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_gravity="bottom"
-        android:layout_marginEnd="120dp"
         android:layout_marginBottom="64dp"
-        android:background="@drawable/bg_bottom_toolbar"
-        android:elevation="8dp"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="8dp">
+        android:orientation="horizontal">
 
-        <!-- Home -->
+        <!-- Custom Toolbar: 2/3 -->
         <LinearLayout
-            android:id="@+id/btnHome"
+            android:id="@+id/customToolbar"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_height="76dp"
+            android:layout_margin="4dp"
+            android:layout_weight="2"
+            android:background="@drawable/bg_bottom_toolbar"
+            android:elevation="2dp"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            android:padding="8dp">
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/icon" />
+            <!-- Home -->
+            <LinearLayout
+                android:id="@+id/btnHome"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:gravity="center"
+                android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Home"
-                android:textColor="@color/black"
-                android:textSize="12sp" />
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/icon" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Home"
+                    android:textColor="@color/black"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <!-- History -->
+            <LinearLayout
+                android:id="@+id/btnHistory"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_history" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="History"
+                    android:textColor="@color/black"
+                    android:textSize="12sp" />
+            </LinearLayout>
         </LinearLayout>
 
-        <!-- History -->
+
+        <!-- ChatBot Button: 1/3 -->
         <LinearLayout
-            android:id="@+id/btnHistory"
+            android:id="@+id/buttonChatBot"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="76dp"
+            android:layout_margin="4dp"
             android:layout_weight="1"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:elevation="2dp"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="horizontal">
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/icon" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="History"
-                android:textColor="@color/black"
-                android:textSize="12sp" />
+            <!-- this is button -->
+            <LinearLayout
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:background="@drawable/bg_circle"
+                android:elevation="1dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="1dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/icon" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ChatBot"
+                    android:textColor="@color/black"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
         </LinearLayout>
     </LinearLayout>
 

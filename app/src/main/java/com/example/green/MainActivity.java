@@ -20,92 +20,103 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.io.IOException;
 import java.io.InputStream;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
-
 
 public class MainActivity extends AppCompatActivity {
-    
-    private ImageView imagePreview;
-    private TextView resultText;
-    private LinearLayout resultLayout;
-    private Button cameraButton;
-    private Button galleryButton;
-    private Button analyzeButton;
-    private TextView loadingText;
-    
+
+    // Các view trong giao diện
+    private ImageView imagePreview;   // Hiển thị ảnh chọn/chụp
+    private TextView resultText;      // Hiển thị kết quả phân tích
+    private LinearLayout resultLayout;// Layout chứa kết quả
+    private Button cameraButton;      // Nút mở camera
+    private Button galleryButton;     // Nút mở thư viện
+    private Button analyzeButton;     // Nút phân tích ảnh
+    private TextView loadingText;     // Text hiển thị "đang phân tích..."
+
+    // Launcher cho camera và thư viện
     private ActivityResultLauncher<Intent> cameraLauncher;
     private ActivityResultLauncher<String> galleryLauncher;
-    
-    private LeafCareAI leafCareAI;
-    private Bitmap currentImage;
 
+    // AI phân tích lá
+    private LeafCareAI leafCareAI;
+    private Bitmap currentImage; // Ảnh hiện tại người dùng chọn
+
+    // Container để load layout động (home, history)
     private FrameLayout containerLayout;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Gắn layout chính
+        // Gắn layout chính từ activity_main.xml
         setContentView(R.layout.activity_main);
 
+        // Lấy FrameLayout chính để load view con
         containerLayout = findViewById(R.id.containerLayout);
-        // Initialize AI model
+
+        // Khởi tạo AI
         leafCareAI = new LeafCareAI(this);
-        
-        // Initialize activity result launchers
+
+        // Launcher mở camera
         cameraLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK) {
-                    Intent data = result.getData();
-                    if (data != null && data.getExtras() != null) {
-                        Bitmap photo = (Bitmap) data.getExtras().get("data");
-                        if (photo != null) {
-                            displayImage(photo);
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Intent data = result.getData();
+                        if (data != null && data.getExtras() != null) {
+                            Bitmap photo = (Bitmap) data.getExtras().get("data");
+                            if (photo != null) {
+                                displayImage(photo); // Hiển thị ảnh vừa chụp
+                            }
                         }
                     }
                 }
-            }
         );
-        
+
+        // Launcher mở thư viện
         galleryLauncher = registerForActivityResult(
-            new ActivityResultContracts.GetContent(),
-            uri -> {
-                if (uri != null) {
-                    try {
-                        InputStream inputStream = getContentResolver().openInputStream(uri);
-                        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                        if (bitmap != null) {
-                            displayImage(bitmap);
+                new ActivityResultContracts.GetContent(),
+                uri -> {
+                    if (uri != null) {
+                        try {
+                            InputStream inputStream = getContentResolver().openInputStream(uri);
+                            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                            if (bitmap != null) {
+                                displayImage(bitmap); // Hiển thị ảnh chọn từ thư viện
+                            }
+                        } catch (IOException e) {
+                            Toast.makeText(this, "Lỗi khi mở ảnh", Toast.LENGTH_SHORT).show();
                         }
-                    } catch (IOException e) {
-                        Toast.makeText(this, "Lỗi khi mở ảnh", Toast.LENGTH_SHORT).show();
                     }
                 }
-            }
         );
+
+        // Khởi tạo thanh menu
         toolBar();
+
+        // Load trang Home mặc định
         createHome();
     }
 
+    // Thiết lập toolbar và gán sự kiện cho Home + History
     private void toolBar() {
         LinearLayout toolbar = findViewById(R.id.customToolbar);
         LinearLayout btnHome = toolbar.findViewById(R.id.btnHome);
         LinearLayout btnHistory = toolbar.findViewById(R.id.btnHistory);
 
+        // Khi click Home -> load trang Home
         btnHome.setOnClickListener(v -> createHome());
+
+        // Khi click History -> load trang History
         btnHistory.setOnClickListener(v -> createHistory());
     }
 
-
-
-
+    // Khởi tạo trang Home
     private void createHome() {
-        containerLayout.removeAllViews();
+        containerLayout.removeAllViews(); // Xóa view cũ
         View homeView = getLayoutInflater().inflate(R.layout.layout_home, containerLayout, false);
-        containerLayout.addView(homeView);
+        containerLayout.addView(homeView); // Thêm view mới
 
-        // Ánh xạ các view từ homeView thay vì từ activity
+        // Ánh xạ các view trong layout_home
         imagePreview = homeView.findViewById(R.id.imagePreview);
         loadingText = homeView.findViewById(R.id.loadingText);
         resultLayout = homeView.findViewById(R.id.resultLayout);
@@ -115,34 +126,33 @@ public class MainActivity extends AppCompatActivity {
         galleryButton = homeView.findViewById(R.id.galleryButton);
         analyzeButton = homeView.findViewById(R.id.analyzeButton);
 
-        // Gán sự kiện
+        // Gán sự kiện cho các nút
         cameraButton.setOnClickListener(v -> openCamera());
         galleryButton.setOnClickListener(v -> openGallery());
         analyzeButton.setOnClickListener(v -> analyzeImage());
     }
 
-
+    // Khởi tạo trang History
     private void createHistory() {
-        containerLayout.removeAllViews();
+        containerLayout.removeAllViews(); // Xóa view cũ
         View historyView = getLayoutInflater().inflate(R.layout.layout_history, containerLayout, false);
-        containerLayout.addView(historyView);
+        containerLayout.addView(historyView); // Load layout_history
 
-        // Nếu trong layout_history.xml có các view khác, bạn ánh xạ từ historyView
-        // Ví dụ:
-        // TextView historyText = historyView.findViewById(R.id.historyText);
-        // RecyclerView historyList = historyView.findViewById(R.id.historyList);
+        // TODO: ánh xạ các view trong layout_history nếu có
     }
 
-    
+    // Hàm mở camera
     private void openCamera() {
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         cameraLauncher.launch(cameraIntent);
     }
-    
+
+    // Hàm mở thư viện ảnh
     private void openGallery() {
         galleryLauncher.launch("image/*");
     }
-    
+
+    // Hiển thị ảnh sau khi chọn/chụp
     private void displayImage(Bitmap bitmap) {
         currentImage = bitmap;
         imagePreview.setImageBitmap(bitmap);
@@ -151,50 +161,52 @@ public class MainActivity extends AppCompatActivity {
         resultLayout.setVisibility(View.GONE);
         loadingText.setVisibility(View.GONE);
     }
-    
+
+    // Phân tích ảnh bằng AI
     private void analyzeImage() {
         if (currentImage == null) {
             Toast.makeText(this, "Vui lòng chọn ảnh trước", Toast.LENGTH_SHORT).show();
             return;
         }
-        
-        // Show loading
+
+        // Hiện loading, ẩn kết quả cũ
         loadingText.setVisibility(View.VISIBLE);
         analyzeButton.setVisibility(View.GONE);
         resultLayout.setVisibility(View.GONE);
-        
-        // Run AI analysis in background thread
+
+        // Chạy AI trong luồng nền (không làm treo giao diện)
         new Thread(() -> {
             final String result = leafCareAI.analyzeImage(currentImage);
-            
-            // Update UI on main thread
+
+            // Sau khi xong -> cập nhật giao diện trong UI thread
             runOnUiThread(() -> {
                 loadingText.setVisibility(View.GONE);
                 displayResult(result);
             });
         }).start();
     }
-    
+
+    // Hiển thị kết quả phân tích
     private void displayResult(String result) {
         resultText.setText(result);
-        
+
         if (result.contains("Bình thường")) {
-            resultLayout.setBackgroundColor(0xFF4CAF50); // Green for healthy
+            resultLayout.setBackgroundColor(0xFF4CAF50); // Xanh lá = bình thường
             resultText.setTextColor(0xFFFFFFFF);
         } else {
-            resultLayout.setBackgroundColor(0xFFF44336); // Red for disease
+            resultLayout.setBackgroundColor(0xFFF44336); // Đỏ = có bệnh
             resultText.setTextColor(0xFFFFFFFF);
         }
-        
+
         resultLayout.setVisibility(View.VISIBLE);
         analyzeButton.setVisibility(View.VISIBLE);
     }
-    
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         if (leafCareAI != null) {
-            leafCareAI.release();
+            leafCareAI.release(); // Giải phóng tài nguyên AI khi thoát
         }
     }
 }
