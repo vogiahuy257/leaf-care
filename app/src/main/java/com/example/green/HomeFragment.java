@@ -20,13 +20,12 @@ import androidx.fragment.app.Fragment;
 
 import java.io.IOException;
 import java.io.InputStream;
-
 public class HomeFragment extends Fragment {
 
     private ImageView imagePreview;
     private TextView resultText, loadingText;
     private LinearLayout resultLayout;
-    private Button cameraButton, galleryButton, analyzeButton;
+    private Button cameraButton, galleryButton;
 
     private ActivityResultLauncher<Intent> cameraLauncher;
     private ActivityResultLauncher<String> galleryLauncher;
@@ -55,7 +54,6 @@ public class HomeFragment extends Fragment {
         resultLayout = view.findViewById(R.id.resultLayout);
         cameraButton = view.findViewById(R.id.cameraButton);
         galleryButton = view.findViewById(R.id.galleryButton);
-        analyzeButton = view.findViewById(R.id.analyzeButton);
 
         // Camera launcher
         cameraLauncher = registerForActivityResult(
@@ -89,7 +87,6 @@ public class HomeFragment extends Fragment {
         // Sự kiện nút
         cameraButton.setOnClickListener(v -> openCamera());
         galleryButton.setOnClickListener(v -> openGallery());
-        analyzeButton.setOnClickListener(v -> analyzeImage());
 
         return view;
     }
@@ -107,9 +104,13 @@ public class HomeFragment extends Fragment {
         currentImage = bitmap;
         imagePreview.setImageBitmap(bitmap);
         imagePreview.setVisibility(View.VISIBLE);
-        analyzeButton.setVisibility(View.VISIBLE);
+
+        // Reset trạng thái
         resultLayout.setVisibility(View.GONE);
         loadingText.setVisibility(View.GONE);
+
+        // Gọi luôn phân tích ảnh
+        analyzeImage();
     }
 
     private void analyzeImage() {
@@ -118,7 +119,6 @@ public class HomeFragment extends Fragment {
             return;
         }
         loadingText.setVisibility(View.VISIBLE);
-        analyzeButton.setVisibility(View.GONE);
         resultLayout.setVisibility(View.GONE);
 
         new Thread(() -> {
@@ -140,6 +140,5 @@ public class HomeFragment extends Fragment {
             resultText.setTextColor(0xFFFFFFFF);
         }
         resultLayout.setVisibility(View.VISIBLE);
-        analyzeButton.setVisibility(View.VISIBLE);
     }
 }

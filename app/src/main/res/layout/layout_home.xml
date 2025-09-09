@@ -3,11 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
+
     <LinearLayout
         android:id="@+id/mainLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#2E7D32"
+        android:background="@color/white"
         android:gravity="center"
         android:orientation="vertical"
         android:paddingLeft="32dp"
@@ -23,7 +24,7 @@
             android:gravity="center"
             android:paddingBottom="18dp"
             android:text="🌿 LeafCare AI"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/black"
             android:textSize="@dimen/text_size_title" />
 
         <!-- Subtitle -->
@@ -34,7 +35,7 @@
             android:gravity="center"
             android:paddingBottom="18dp"
             android:text="AI phân tích bệnh lá cây chính xác"
-            android:textColor="#E8F5E8"
+            android:textColor="@color/black"
             android:textSize="@dimen/text_size_large" />
 
         <!-- Image preview -->
@@ -77,40 +78,17 @@
                 android:textSize="@dimen/text_size_medium" />
         </LinearLayout>
 
-        <!-- Buttons container -->
-        <LinearLayout
-            android:id="@+id/buttonBottom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/analyzeButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="#FF9800"
-                android:paddingLeft="24dp"
-                android:paddingTop="16dp"
-                android:paddingRight="24dp"
-                android:paddingBottom="16dp"
-                android:text="🔍 AI Phân tích"
-                android:textColor="#FFFFFF"
-                android:textSize="@dimen/text_size_medium"
-                android:visibility="gone" />
-        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/buttonContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:orientation="horizontal"
-            android:paddingTop="8dp">
+            android:orientation="vertical">
 
             <Button
                 android:id="@+id/cameraButton"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:backgroundTint="#4CAF50"
@@ -119,13 +97,9 @@
                 android:textColor="#FFFFFF"
                 android:textSize="@dimen/text_size_small" />
 
-            <Space
-                android:layout_width="16dp"
-                android:layout_height="wrap_content" />
-
             <Button
                 android:id="@+id/galleryButton"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:backgroundTint="#2196F3"
