@@ -1,6 +1,9 @@
 package com.example.green;
 
+import android.animation.ValueAnimator;
 import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,15 +26,72 @@ public class MainActivity extends AppCompatActivity {
         // Ánh xạ nút toolbar
         btnHome = findViewById(R.id.btnHome);
         btnHistory = findViewById(R.id.btnHistory);
+        View indicator = findViewById(R.id.indicator);
 
-        // Gán sự kiện click đổi Fragment
-        btnHome.setOnClickListener(v -> replaceFragment(new HomeFragment()));
-        btnHistory.setOnClickListener(v -> replaceFragment(new HistoryFragment()));
+        btnHome.setOnClickListener(v -> {
+            replaceFragment(new HomeFragment());
+            moveIndicator(v);
+        });
+
+        btnHistory.setOnClickListener(v -> {
+            replaceFragment(new HistoryFragment());
+            moveIndicator(v);
+        });
 
         // Load Home mặc định
         if (savedInstanceState == null) {
             replaceFragment(new HomeFragment());
+
+            indicator.post(() -> {
+                // khởi tạo width bằng width target Home
+                ViewGroup.LayoutParams params = indicator.getLayoutParams();
+                params.width = btnHome.getWidth();
+                indicator.setLayoutParams(params);
+
+                // di chuyển ngay dưới Home
+                indicator.setX(btnHome.getX());
+            });
         }
+    }
+
+    private void moveIndicator(View target) {
+        View indicator = findViewById(R.id.indicator);
+
+        // Vị trí và width target
+        float targetX = target.getX();
+        int targetWidth = target.getWidth();
+
+        // Lấy width bắt đầu (fallback)
+        int startWidth = indicator.getWidth();
+        if (startWidth <= 0) {
+            startWidth = targetWidth;
+        }
+
+        // Animate X
+        indicator.animate()
+                .x(targetX)
+                .setDuration(300)
+                .start();
+
+        // Animate width
+        ValueAnimator animator = ValueAnimator.ofInt(startWidth, targetWidth);
+        animator.setDuration(300);
+        animator.addUpdateListener(animation -> {
+            int newWidth = (int) animation.getAnimatedValue();
+            ViewGroup.LayoutParams params = indicator.getLayoutParams();
+            params.width = newWidth;
+            indicator.setLayoutParams(params);
+        });
+        animator.addListener(new android.animation.AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(android.animation.Animator animation) {
+                // Lưu width cuối cùng
+                ViewGroup.LayoutParams params = indicator.getLayoutParams();
+                params.width = targetWidth;
+                indicator.setLayoutParams(params);
+            }
+        });
+        animator.start();
     }
 
     /**
