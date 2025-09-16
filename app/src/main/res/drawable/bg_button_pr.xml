@@ -1,0 +1,9 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- Nền trong suốt mờ (trắng với alpha 67%) -->
+    <solid android:color="@color/accent_color"/>
+
+    <!-- Bo góc -->
+    <corners android:radius="100dp"/>
+</shape>
