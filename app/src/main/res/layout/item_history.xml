@@ -11,7 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="12dp"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:background="@color/white">
 
         <!-- Hình ảnh thumbnail -->
         <ImageView
@@ -34,6 +35,7 @@
                 android:id="@+id/historyResultText"
                 android:text="Kết quả"
                 android:textSize="16sp"
+                android:textColor="@color/black"
                 android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
@@ -42,9 +44,10 @@
                 android:id="@+id/historyTimestamp"
                 android:text="15/09/2025 10:30"
                 android:textSize="14sp"
-                android:textColor="#666"
+                android:textColor="@color/text_primary"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                />
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

@@ -14,13 +14,14 @@ import androidx.fragment.app.FragmentTransaction;
 
 public class MainActivity extends AppCompatActivity {
 
-    private LinearLayout btnHome, btnHistory, chatButton,chatContent;
+    private LinearLayout btnHome, btnHistory, chatButton,chatContent, btnSetting;
+
     private boolean[] isChatOpen = {false}; // dùng array để truy cập trong lambda
 
     private View indicator;
 
-    private FrameLayout containerChatBot;
-
+    private FrameLayout containerChatBot,loadingOverlay;
+    private Setting settingPanel;
     private LeafCareAI leafCareAI; // AI model – load 1 lần, dùng chung cho toàn bộ Activity
 
     @Override
@@ -37,20 +38,42 @@ public class MainActivity extends AppCompatActivity {
         indicator = findViewById(R.id.indicator);
         containerChatBot = findViewById(R.id.containerChatBot);
         chatContent = findViewById(R.id.chatContent);
+        loadingOverlay = findViewById(R.id.loadingOverlay);
+        btnSetting = findViewById(R.id.buttonSetting);
+        settingPanel = findViewById(R.id.settingPanel);
+        settingPanel.hide();
+        btnSetting.setOnClickListener(v -> settingPanel.show());
 
         chatButton.setOnClickListener(v -> {
             openChatBot(v);
         });
-
         btnHome.setOnClickListener(v -> {
-            replaceFragment(new HomeFragment());
-            moveIndicator(v);
+            moveIndicator(v, () ->{
+                    new Thread(() -> {
+                        HomeFragment fragment = new HomeFragment();
+
+                        runOnUiThread(() -> {
+                            loadingOverlay.setVisibility(View.GONE);
+                            replaceFragment(fragment);
+                        });
+                    }).start();
+            });
         });
 
         btnHistory.setOnClickListener(v -> {
-            replaceFragment(new HistoryFragment());
-            moveIndicator(v);
+            moveIndicator(v, () -> {
+                new Thread(() -> {
+                    HistoryFragment fragment = new HistoryFragment();
+
+                    runOnUiThread(() -> {
+                        loadingOverlay.setVisibility(View.GONE);
+                        replaceFragment(fragment);
+                    });
+                }).start();
+            });
         });
+
+
 
         // Load Home mặc định
         if (savedInstanceState == null) {
@@ -61,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
                 ViewGroup.LayoutParams params = indicator.getLayoutParams();
                 params.width = btnHome.getWidth();
                 indicator.setLayoutParams(params);
-
                 // di chuyển ngay dưới Home
                 indicator.setX(btnHome.getX());
             });
@@ -127,26 +149,22 @@ public class MainActivity extends AppCompatActivity {
             containerChatBot.postDelayed(() -> containerChatBot.setVisibility(View.GONE), 300);
         }
     }
-    private void moveIndicator(View target) {
+    private void moveIndicator(View target, Runnable onAnimationEnd) {
         View indicator = findViewById(R.id.indicator);
 
-        // Vị trí và width target
         float targetX = target.getX();
         int targetWidth = target.getWidth();
-
-        // Lấy width bắt đầu (fallback)
         int startWidth = indicator.getWidth();
-        if (startWidth <= 0) {
-            startWidth = targetWidth;
-        }
+        if (startWidth <= 0) startWidth = targetWidth;
 
-        // Animate X
+        // Hiện overlay loading
+        loadingOverlay.setVisibility(View.VISIBLE);
+
         indicator.animate()
                 .x(targetX)
                 .setDuration(300)
                 .start();
 
-        // Animate width
         ValueAnimator animator = ValueAnimator.ofInt(startWidth, targetWidth);
         animator.setDuration(300);
         animator.addUpdateListener(animation -> {
@@ -158,10 +176,13 @@ public class MainActivity extends AppCompatActivity {
         animator.addListener(new android.animation.AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(android.animation.Animator animation) {
-                // Lưu width cuối cùng
                 ViewGroup.LayoutParams params = indicator.getLayoutParams();
                 params.width = targetWidth;
                 indicator.setLayoutParams(params);
+
+                if (onAnimationEnd != null) {
+                    onAnimationEnd.run();
+                }
             }
         });
         animator.start();

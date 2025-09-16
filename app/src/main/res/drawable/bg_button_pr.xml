@@ -2,7 +2,7 @@
     android:shape="rectangle">
 
     <!-- Nền trong suốt mờ (trắng với alpha 67%) -->
-    <solid android:color="@color/accent_color"/>
+    <solid android:color="@color/primary_dark"/>
 
     <!-- Bo góc -->
     <corners android:radius="100dp"/>

@@ -107,7 +107,7 @@
 
         <!-- ChatBot Button: 1/3 -->
         <LinearLayout
-            android:id="@+id/buttonChatBot"
+            android:id="@+id/buttonSetting"
             android:layout_width="0dp"
             android:layout_height="76dp"
             android:layout_weight="1"
@@ -115,29 +115,21 @@
             android:gravity="center"
             android:orientation="horizontal">
 
+            <LinearLayout
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="@drawable/bg_button_pr"
+                android:elevation="1dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="6dp">
 
-<!--            &lt;!&ndash; this is button &ndash;&gt;-->
-<!--            <LinearLayout-->
-<!--                android:layout_width="70dp"-->
-<!--                android:layout_height="70dp"-->
-<!--                android:background="@drawable/bg_button_circle"-->
-<!--                android:elevation="1dp"-->
-<!--                android:gravity="center"-->
-<!--                android:orientation="vertical"-->
-<!--                android:padding="6dp">-->
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_setting" />
 
-<!--                <ImageView-->
-<!--                    android:layout_width="24dp"-->
-<!--                    android:layout_height="24dp"-->
-<!--                    android:src="@drawable/ic_box" />-->
-
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="ChatBot"-->
-<!--                    android:textColor="@color/black"-->
-<!--                    android:textSize="12sp" />-->
-<!--            </LinearLayout>-->
+            </LinearLayout>
 
         </LinearLayout>
     </LinearLayout>
@@ -197,6 +189,30 @@
 
         </LinearLayout>
     </FrameLayout>
+
+    <com.example.green.Setting
+        android:id="@+id/settingPanel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <FrameLayout
+        android:id="@+id/loadingOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#00000000"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center">
+
+        <ProgressBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:visibility="visible" />
+    </FrameLayout>
+
 
 
 </RelativeLayout>

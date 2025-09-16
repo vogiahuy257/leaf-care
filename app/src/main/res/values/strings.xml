@@ -17,4 +17,15 @@
     <string name="back_to_home">Quay lại trang chủ</string>
     <string name="normal_leaf">Lá bình thường</string>
     <string name="disease_detected">Phát hiện bệnh</string>
+    <string name="setting_title">Cài đặt</string>
+    <string name="close_button">Đóng</string>
+    <string name="theme_light">Sáng</string>
+    <string name="theme_dark">Tối</string>
+
+    <string-array name="background_options">
+        <item>Trắng</item>
+        <item>Đen</item>
+        <item>Xanh lá</item>
+        <item>Xanh dương</item>
+    </string-array>
 </resources>
