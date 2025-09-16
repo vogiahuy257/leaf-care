@@ -2,7 +2,7 @@
     android:shape="rectangle">
 
     <!-- Nền màu xanh -->
-    <solid android:color="@color/primary_light"/>
+    <solid android:color="@color/background_light"/>
 
     <!-- Bo tròn hoàn toàn -->
     <corners android:radius="100dp"/>

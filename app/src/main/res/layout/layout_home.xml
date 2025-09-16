@@ -2,19 +2,17 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
     android:fillViewport="true">
 
     <LinearLayout
         android:id="@+id/mainLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/accent_color"
+        android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="vertical"
-        android:paddingLeft="32dp"
-        android:paddingTop="64dp"
-        android:paddingRight="32dp"
-        android:paddingBottom="64dp">
+        android:padding="24dp">
 
         <!-- Title -->
         <TextView
@@ -22,10 +20,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:paddingBottom="18dp"
+            android:paddingBottom="8dp"
             android:text="🌿 LeafCare AI"
             android:textColor="@color/black"
-            android:textSize="@dimen/text_size_title" />
+            android:textSize="22sp"
+            android:textStyle="bold" />
 
         <!-- Subtitle -->
         <TextView
@@ -33,19 +32,129 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:paddingBottom="18dp"
-            android:text="AI phân tích bệnh lá cây chính xác"
+            android:paddingBottom="14dp"
+            android:text="AI phân tích bệnh lá"
             android:textColor="@color/black"
-            android:textSize="@dimen/text_size_large" />
+            android:textSize="16sp" />
+
+        <!-- Steps Card -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:elevation="4dp"
+            app:cardCornerRadius="12dp"
+            app:cardBackgroundColor="@color/white">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:weightSum="3">
+
+                <!-- Step 1 -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_camera_alt" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Chụp ảnh"
+                        android:textSize="13sp"
+                        android:textColor="@color/black" />
+                </LinearLayout>
+
+                <!-- Arrow -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="4dp"
+                    android:text="➔"
+                    android:textSize="16sp"
+                    android:textColor="@color/black" />
+
+                <!-- Step 2 -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_assignment" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Xem chẩn đoán"
+                        android:textSize="13sp"
+                        android:textColor="@color/black" />
+                </LinearLayout>
+
+                <!-- Arrow -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="4dp"
+                    android:text="➔"
+                    android:textSize="16sp"
+                    android:textColor="@color/black" />
+
+                <!-- Step 3 -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_lightbulb" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Đề xuất"
+                        android:textSize="13sp"
+                        android:textColor="@color/black" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+        </androidx.cardview.widget.CardView>
 
         <!-- Image preview -->
         <ImageView
             android:id="@+id/imagePreview"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:background="#1B5E20"
+            android:layout_height="220dp"
+            android:background="#E0E0E0"
             android:scaleType="centerCrop"
-            android:visibility="gone" />
+            android:visibility="gone"
+            android:layout_marginBottom="16dp"
+            android:contentDescription="Preview ảnh" />
 
         <!-- Loading text -->
         <TextView
@@ -53,10 +162,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:padding="16dp"
+            android:padding="12dp"
             android:text="🤖 AI đang phân tích..."
-            android:textColor="#FFEB3B"
-            android:textSize="@dimen/text_size_medium"
+            android:textColor="@color/teal_700"
+            android:textSize="15sp"
             android:visibility="gone" />
 
         <!-- Result layout -->
@@ -66,7 +175,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="vertical"
-            android:padding="14dp"
+            android:padding="12dp"
             android:visibility="gone">
 
             <TextView
@@ -74,40 +183,35 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:padding="16dp"
-                android:textSize="@dimen/text_size_medium" />
+                android:padding="12dp"
+                android:textColor="@color/black"
+                android:textSize="15sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
-
-        <LinearLayout
-            android:id="@+id/buttonContainer"
+        <!-- Main Action Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/cameraButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:text="📷 Chụp Ảnh"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/primary_green"
+            app:cornerRadius="24dp"
+            android:padding="12dp"
+            style="@style/Widget.MaterialComponents.Button"/>
 
-            <Button
-                android:id="@+id/cameraButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:padding="16dp"
-                android:text="📷 Chụp ảnh"
-                android:textColor="#FFFFFF"
-                android:textSize="@dimen/text_size_small" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/galleryButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🖼️ Chọn ảnh"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/teal_700"
+            app:cornerRadius="24dp"
+            android:padding="12dp"
+            style="@style/Widget.MaterialComponents.Button"/>
 
-            <Button
-                android:id="@+id/galleryButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:padding="16dp"
-                android:text="🖼️ Chọn ảnh"
-                android:textColor="#FFFFFF"
-                android:textSize="@dimen/text_size_small" />
-
-
-        </LinearLayout>
 
     </LinearLayout>
 </ScrollView>

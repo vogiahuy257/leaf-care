@@ -9,30 +9,20 @@
 
     <FrameLayout
         android:id="@+id/containerLayout"
-        android:background="@color/text_primary"
+        android:background="@color/white"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+        >
 
     </FrameLayout>
 
-    <FrameLayout
-        android:id="@+id/containerChatBot"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_below="@+id/bottomContainer"
-        android:layout_marginTop="0dp"
-        android:background="@android:color/white">
-
-        <!-- Nội dung chat -->
-
-    </FrameLayout>
 
 
     <LinearLayout
         android:id="@+id/bottomContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="32dp"
         android:orientation="horizontal">
 
         <!-- Custom Toolbar: 2/3 -->
@@ -126,31 +116,87 @@
             android:orientation="horizontal">
 
 
-            <!-- this is button -->
-            <LinearLayout
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:background="@drawable/bg_circle"
-                android:elevation="1dp"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:padding="1dp">
+<!--            &lt;!&ndash; this is button &ndash;&gt;-->
+<!--            <LinearLayout-->
+<!--                android:layout_width="70dp"-->
+<!--                android:layout_height="70dp"-->
+<!--                android:background="@drawable/bg_button_circle"-->
+<!--                android:elevation="1dp"-->
+<!--                android:gravity="center"-->
+<!--                android:orientation="vertical"-->
+<!--                android:padding="6dp">-->
 
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/icon" />
+<!--                <ImageView-->
+<!--                    android:layout_width="24dp"-->
+<!--                    android:layout_height="24dp"-->
+<!--                    android:src="@drawable/ic_box" />-->
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="ChatBot"
-                    android:textColor="@color/black"
-                    android:textSize="12sp" />
-            </LinearLayout>
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="ChatBot"-->
+<!--                    android:textColor="@color/black"-->
+<!--                    android:textSize="12sp" />-->
+<!--            </LinearLayout>-->
 
         </LinearLayout>
     </LinearLayout>
+
+    <!-- Nút ChatBot -->
+    <LinearLayout
+        android:id="@+id/chatButton"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:background="@drawable/bg_button_circle"
+        android:elevation="4dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="56dp">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_box" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ChatBot"
+            android:textColor="@color/black"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <!-- FrameLayout ChatBot (ban đầu ẩn) -->
+    <FrameLayout
+        android:id="@+id/containerChatBot"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/bg_button_cricle_blr"
+        android:visibility="gone">
+
+        <!-- Nội dung ChatBot -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:visibility="gone"
+            android:id="@+id/chatContent">
+
+            <!-- Ví dụ: TextView -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hello! I am your ChatBot"
+                android:textColor="@color/black" />
+
+        </LinearLayout>
+    </FrameLayout>
 
 
 </RelativeLayout>
