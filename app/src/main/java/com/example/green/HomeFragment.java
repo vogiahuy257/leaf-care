@@ -140,5 +140,9 @@ public class HomeFragment extends Fragment {
             resultText.setTextColor(0xFFFFFFFF);
         }
         resultLayout.setVisibility(View.VISIBLE);
+
+        var dbHelper = new HistoryDatabaseHelper(requireContext());
+        dbHelper.insertHistory(result, currentImage);
+
     }
 }
