@@ -67,6 +67,13 @@ public class HistoryDatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    // Xóa 1 record trong database theo ID
+    public void deleteHistory(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_HISTORY, COLUMN_ID + "=?", new String[]{String.valueOf(id)});
+        db.close();
+    }
+
     public List<HistoryItem> getAllHistory() {
         List<HistoryItem> list = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
