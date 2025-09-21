@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/settingOverlay"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,114 +9,70 @@
     android:clickable="true"
     android:focusable="true">
 
-    <!-- Khối trung tâm -->
-    <LinearLayout
-        android:layout_width="wrap_content"
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="320dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_gravity="center">
+        android:layout_gravity="center"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="8dp">
 
-        <!-- Header: Tiêu đề + nút đóng -->
         <LinearLayout
-            android:layout_width="300dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="0dp">
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <!-- Khối tiêu đề -->
-            <FrameLayout
-                android:layout_width="0dp"
-                android:layout_height="58dp"
-                android:layout_weight="1"
-                android:background="@drawable/bg_shadow"
-                android:gravity="center_vertical|start"
-                android:padding="16dp">
+            <!-- Header: Title (Không còn nút đóng ở góc trên bên phải) -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp">
 
                 <TextView
                     android:id="@+id/settingTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Cài đặt"
-                    android:textColor="@color/black"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-            </FrameLayout>
+                    android:textAppearance="?attr/textAppearanceHeadline6"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"/>
+            </RelativeLayout>
 
-            <!-- Khối nút đóng -->
-            <FrameLayout
-                android:layout_width="58dp"
-                android:layout_height="58dp"
-                android:background="@drawable/bg_button_pr"
-                android:layout_marginStart="8dp"
-                android:foregroundGravity="center">
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/listDivider"
+                android:layout_marginBottom="16dp"/>
 
-                <ImageView
-                    android:id="@+id/btnCloseSetting"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_close"
-                    />
-            </FrameLayout>
-
-
-        </LinearLayout>
-
-
-        <!-- Nội dung Setting -->
-        <LinearLayout
-            android:id="@+id/settingContent"
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/bg_shadow"
-            android:padding="16dp"
-            android:layout_marginTop="8dp"
-            >
-
-            <RadioGroup
-                android:id="@+id/themeGroup"
-                android:orientation="vertical"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Giao diện"
-                    android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    />
-
-                <RadioButton
-                    android:id="@+id/radioLight"
-                    android:text="Sáng"
-                    android:textColor="@color/black"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-
-                <RadioButton
-                    android:id="@+id/radioDark"
-                    android:text="Tối"
-                    android:textColor="@color/black"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-            </RadioGroup>
+            <!-- Model Selection -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Chon model"
-                android:textColor="@color/black"
-                android:textSize="16sp"
-                android:textStyle="bold"/>
+                android:text="Chọn mô hình"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:layout_marginBottom="8dp"/>
+
             <Spinner
                 android:id="@+id/bgSpinner"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:entries="@array/background_options"/>
+                android:layout_marginTop="8dp"
+                android:entries="@array/background_options" />
+            <!-- Nút đóng tròn không còn ở đây -->
         </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
-    </LinearLayout>
-
+    <!-- Nút Đóng Mới - Nằm ngoài CardView, ở dưới cùng, chính giữa -->
+    <ImageButton
+        android:id="@+id/btnCloseSetting"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:src="@drawable/ic_close"
+        android:background="@drawable/bg_circular_green_button"
+        app:tint="@android:color/white"
+        android:contentDescription="Đóng"
+        android:padding="12dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="80dp"/>
 </FrameLayout>

@@ -173,20 +173,41 @@
 
         <!-- Nội dung ChatBot -->
         <LinearLayout
+            android:id="@+id/chatContent"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:padding="16dp"
-            android:visibility="gone"
-            android:id="@+id/chatContent">
+            android:visibility="gone"> {/* Giữ visibility="gone" ở đây, sẽ được quản lý bằng code Java */}
 
-            <!-- Ví dụ: TextView -->
-            <TextView
-                android:layout_width="wrap_content"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/chatRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginBottom="8dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Hello! I am your ChatBot"
-                android:textColor="@color/black" />
+                android:orientation="horizontal">
 
+                <EditText
+                    android:id="@+id/messageEditText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Nhập tin nhắn..."
+                    android:inputType="textShortMessage"
+                    android:maxLines="1"
+                    android:layout_marginEnd="8dp"/>
+
+                <Button
+                    android:id="@+id/sendButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Gửi"/>
+            </LinearLayout>
         </LinearLayout>
     </FrameLayout>
 
