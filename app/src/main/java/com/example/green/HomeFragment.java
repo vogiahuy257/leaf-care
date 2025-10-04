@@ -123,14 +123,14 @@ public class HomeFragment extends Fragment {
                     .replace("\nCần xử lý ngay!", "")
                     .trim();
 
-            displayResult(bitmap, isHealthy, diseaseType);
+            displayResult(bitmap, isHealthy, diseaseType, aiResult);
         }
     }
 
     /**
      * Hiển thị kết quả dưới dạng card động
      */
-    public void displayResult(Bitmap bitmap, boolean isHealthy, String diseaseType) {
+    public void displayResult(Bitmap bitmap, boolean isHealthy, String diseaseType, String aiResult) {
         View resultView = getLayoutInflater().inflate(R.layout.result_item, resultLayout, false);
 
         ImageView resultImage = resultView.findViewById(R.id.resultImage);
@@ -142,7 +142,7 @@ public class HomeFragment extends Fragment {
 
         if (isHealthy) {
             resultTitle.setText("✅ Lá cây khỏe mạnh");
-            resultMessage.setText("Không phát hiện dấu hiệu bất thường.");
+            resultMessage.setText("Chỉ cần chăm sóc bình thường thôi!");
             suggestionButton.setVisibility(View.GONE);
             ((MaterialCardView) resultView).setCardBackgroundColor(0xFFE8F5E9); // xanh nhạt
         } else {
@@ -168,9 +168,9 @@ public class HomeFragment extends Fragment {
         resultLayout.removeAllViews(); // xóa các kết quả cũ
         resultLayout.addView(resultView);
 
-        // Lưu lịch sử
+        // ================== Lưu lịch sử ==================
         HistoryDatabaseHelper dbHelper = new HistoryDatabaseHelper(requireContext());
-        dbHelper.insertHistory(diseaseType, bitmap);
+        dbHelper.insertHistory(aiResult, bitmap); // <-- Lưu toàn bộ kết quả, kể cả lá khỏe mạnh
     }
 
     @Override

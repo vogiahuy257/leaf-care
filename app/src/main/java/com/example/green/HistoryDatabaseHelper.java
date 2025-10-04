@@ -14,12 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HistoryDatabaseHelper extends SQLiteOpenHelper {
+
     private static final String DATABASE_NAME = "leafcare_history.db";
     private static final int DATABASE_VERSION = 1;
 
     private static final String TABLE_HISTORY = "history";
     private static final String COLUMN_ID = "id";
-    private static final String COLUMN_RESULT = "result";
+    private static final String COLUMN_RESULT = "result";      // toàn bộ string hiển thị
     private static final String COLUMN_IMAGE_PATH = "image_path";
     private static final String COLUMN_TIMESTAMP = "timestamp";
 
@@ -46,6 +47,7 @@ public class HistoryDatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    // ================== INSERT HISTORY ==================
     public void insertHistory(String result, Bitmap image) {
         insertHistory(result, image, String.valueOf(System.currentTimeMillis()));
     }
@@ -69,7 +71,7 @@ public class HistoryDatabaseHelper extends SQLiteOpenHelper {
         db.insert(TABLE_HISTORY, null, values);
     }
 
-    // ✅ Lưu ảnh tạm (không ghi DB)
+    // ================== SAVE TEMP IMAGE ==================
     public String saveTempImage(Bitmap image) {
         String fileName = "temp_" + System.currentTimeMillis() + ".png";
         File file = new File(context.getFilesDir(), fileName);
@@ -83,19 +85,18 @@ public class HistoryDatabaseHelper extends SQLiteOpenHelper {
         return file.getAbsolutePath();
     }
 
-    // ✅ Xóa 1 record
+    // ================== DELETE ==================
     public void deleteHistory(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_HISTORY, COLUMN_ID + "=?", new String[]{String.valueOf(id)});
     }
 
-    // ✅ Xóa tất cả lịch sử
     public void clearAllHistory() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_HISTORY, null, null);
     }
 
-    // ✅ Lấy toàn bộ lịch sử
+    // ================== GET HISTORY ==================
     public List<HistoryItem> getAllHistory() {
         List<HistoryItem> list = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
@@ -115,7 +116,6 @@ public class HistoryDatabaseHelper extends SQLiteOpenHelper {
         return list;
     }
 
-    // ✅ Lấy 1 lịch sử theo ID
     public HistoryItem getHistoryById(int id) {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query(TABLE_HISTORY, null, COLUMN_ID + "=?",
@@ -132,7 +132,7 @@ public class HistoryDatabaseHelper extends SQLiteOpenHelper {
         return item;
     }
 
-    // ✅ Load ảnh từ path
+    // ================== LOAD IMAGE ==================
     public Bitmap loadImage(String path) {
         return BitmapFactory.decodeFile(path);
     }

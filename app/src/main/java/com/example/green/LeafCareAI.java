@@ -14,6 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 
 public class LeafCareAI {
     private static final String TAG = "LeafCareAI";
@@ -25,8 +26,8 @@ public class LeafCareAI {
     // Class names cho model
     private static final String[] CLASS_NAMES = {
             "Bình thường",
-            "Bệnh đốm nâu",
-            "Bệnh phấn trắng"
+            "Bệnh phấn trắng",
+            "Bệnh đốm nâu"
     };
 
     public LeafCareAI(Context context) {
@@ -68,17 +69,29 @@ public class LeafCareAI {
         }
 
         try {
-            // Resize ảnh
-            Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 224, 224, true);
+            // ================== CHUYỂN SANG RGB ==================
+            Bitmap rgbBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
 
-            // Convert bitmap → tensor
-            float[] meanVals = {0.485f, 0.456f, 0.406f};
-            float[] stdVals = {0.229f, 0.224f, 0.225f};
-            Tensor inputTensor = TensorImageUtils.bitmapToFloat32Tensor(
-                    resizedBitmap, meanVals, stdVals
+            // ================== CROP CENTER ==================
+            int width = rgbBitmap.getWidth();
+            int height = rgbBitmap.getHeight();
+            int newSize = Math.min(width, height);
+            Bitmap croppedBitmap = Bitmap.createBitmap(rgbBitmap,
+                    (width - newSize) / 2,
+                    (height - newSize) / 2,
+                    newSize,
+                    newSize
             );
 
-            // Run inference
+            // ================== RESIZE 224x224 ==================
+            Bitmap resizedBitmap = Bitmap.createScaledBitmap(croppedBitmap, 224, 224, true);
+
+            // ================== CONVERT TO TENSOR ==================
+            float[] meanVals = {0.485f, 0.456f, 0.406f};
+            float[] stdVals = {0.229f, 0.224f, 0.225f};
+            Tensor inputTensor = TensorImageUtils.bitmapToFloat32Tensor(resizedBitmap, meanVals, stdVals);
+
+            // ================== RUN INFERENCE ==================
             IValue output = module.forward(IValue.from(inputTensor));
 
             float[] scores;
@@ -92,13 +105,16 @@ public class LeafCareAI {
                 return "🌱 Bình thường - Lá cây khỏe mạnh!";
             }
 
-            // Lấy class dự đoán
+            // ================== LOG SỐ ĐIỂM ==================
+            Log.d(TAG, "Scores: " + Arrays.toString(scores));
+
+            // ================== LẤY CLASS DỰ ĐOÁN ==================
             int predictedClass = getMaxIndex(scores);
             String className = (predictedClass < CLASS_NAMES.length)
                     ? CLASS_NAMES[predictedClass]
                     : "Không xác định";
 
-            // Format kết quả
+            // ================== FORMAT KẾT QUẢ ==================
             String result;
             if (predictedClass == 0) {
                 result = "🌱 " + className + " - Lá cây khỏe mạnh!";
