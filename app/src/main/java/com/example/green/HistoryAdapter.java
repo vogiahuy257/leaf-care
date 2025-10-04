@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.example.green.HistoryItem;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,13 +39,23 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
     @Override
     public void onBindViewHolder(@NonNull HistoryViewHolder holder, int position) {
         HistoryItem item = historyList.get(position);
-        holder.resultText.setText(item.getResultText());
+
+        // Hiển thị resultText, luôn có tiêu đề
+        String result = item.getResultText();
+        if (result == null || result.trim().isEmpty()) {
+            result = "Cây khỏe mạnh"; // mặc định nếu không có kết quả bệnh
+        }
+        holder.resultText.setText(result);
 
         // Format timestamp
-        long timeMillis = Long.parseLong(item.getTimestamp());
-        String formatted = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-                .format(new Date(timeMillis));
-        holder.timestampText.setText(formatted);
+        try {
+            long timeMillis = Long.parseLong(item.getTimestamp());
+            String formatted = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+                    .format(new Date(timeMillis));
+            holder.timestampText.setText(formatted);
+        } catch (Exception e) {
+            holder.timestampText.setText(item.getTimestamp()); // fallback
+        }
 
         // Load image thumbnail
         Bitmap bitmap = dbHelper.loadImage(item.getImagePath());
@@ -54,7 +63,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
             holder.thumbnail.setImageBitmap(bitmap);
         }
 
-        // 👉 Xử lý click để mở chi tiết
+        // Click mở chi tiết
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, HistoryDetailActivity.class);
             intent.putExtra("id", item.getId());

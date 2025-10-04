@@ -1,45 +1,38 @@
 package com.example.green;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
+
 import java.io.IOException;
-import java.io.InputStream;
+
 public class HomeFragment extends Fragment {
 
-    private ImageView imagePreview;
-    private TextView resultText, loadingText;
     private LinearLayout resultLayout;
-    private Button cameraButton, galleryButton;
-
-    private ActivityResultLauncher<Intent> cameraLauncher;
-    private ActivityResultLauncher<String> galleryLauncher;
-
-    private LeafCareAI leafCareAI;   // Không tạo mới, mượn từ MainActivity
+    private MaterialButton cameraButton, galleryButton;
     private Bitmap currentImage;
+    private LeafCareAI leafCareAI;
+    private TextView analysisStatus;
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        if (context instanceof MainActivity) {
-            leafCareAI = ((MainActivity) context).getLeafCareAI();
-        }
-    }
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int REQUEST_IMAGE_PICK = 2;
 
     @Nullable
     @Override
@@ -47,102 +40,144 @@ public class HomeFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.layout_home, container, false);
 
-        // Ánh xạ view
-        imagePreview = view.findViewById(R.id.imagePreview);
-        resultText = view.findViewById(R.id.resultText);
-        loadingText = view.findViewById(R.id.loadingText);
+        // Ánh xạ
         resultLayout = view.findViewById(R.id.resultLayout);
         cameraButton = view.findViewById(R.id.cameraButton);
         galleryButton = view.findViewById(R.id.galleryButton);
+        analysisStatus = view.findViewById(R.id.analysisStatus);
 
-        // Camera launcher
-        cameraLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == Activity.RESULT_OK) {
-                        Intent data = result.getData();
-                        if (data != null && data.getExtras() != null) {
-                            Bitmap photo = (Bitmap) data.getExtras().get("data");
-                            if (photo != null) displayImage(photo);
-                        }
-                    }
-                }
-        );
+        // Khởi tạo mô hình AI
+        leafCareAI = new LeafCareAI(requireContext());
 
-        // Gallery launcher
-        galleryLauncher = registerForActivityResult(
-                new ActivityResultContracts.GetContent(),
-                uri -> {
-                    if (uri != null) {
-                        try (InputStream inputStream = requireContext().getContentResolver().openInputStream(uri)) {
-                            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                            if (bitmap != null) displayImage(bitmap);
-                        } catch (IOException e) {
-                            Toast.makeText(requireContext(), "Lỗi khi mở ảnh", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }
-        );
-
-        // Sự kiện nút
+        // Nút Camera
         cameraButton.setOnClickListener(v -> openCamera());
+
+        // Nút Gallery
         galleryButton.setOnClickListener(v -> openGallery());
 
         return view;
     }
 
     private void openCamera() {
-        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        cameraLauncher.launch(cameraIntent);
+        Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePicture.resolveActivity(requireActivity().getPackageManager()) != null) {
+            startActivityForResult(takePicture, REQUEST_IMAGE_CAPTURE);
+        }
     }
 
     private void openGallery() {
-        galleryLauncher.launch("image/*");
+        Intent pickPhoto = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(pickPhoto, REQUEST_IMAGE_PICK);
     }
 
-    private void displayImage(Bitmap bitmap) {
-        currentImage = bitmap;
-        imagePreview.setImageBitmap(bitmap);
-        imagePreview.setVisibility(View.VISIBLE);
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-        // Reset trạng thái
-        resultLayout.setVisibility(View.GONE);
-        loadingText.setVisibility(View.GONE);
+        if (resultCode == Activity.RESULT_OK && data != null) {
+            Bitmap bitmap = null;
+            if (requestCode == REQUEST_IMAGE_CAPTURE) {
+                bitmap = (Bitmap) data.getExtras().get("data");
+            } else if (requestCode == REQUEST_IMAGE_PICK) {
+                Uri selectedImage = data.getData();
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), selectedImage);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
 
-        // Gọi luôn phân tích ảnh
-        analyzeImage();
-    }
+            if (bitmap != null) {
+                currentImage = bitmap;
+                // Hiển thị trạng thái phân tích
+                analysisStatus.setVisibility(View.VISIBLE);
+                resultLayout.setVisibility(View.GONE);
 
-    private void analyzeImage() {
-        if (currentImage == null) {
-            Toast.makeText(requireContext(), "Vui lòng chọn ảnh trước", Toast.LENGTH_SHORT).show();
-            return;
+                // Chạy AI trên background thread
+                new AnalyzeTask().execute(bitmap);
+            }
         }
-        loadingText.setVisibility(View.VISIBLE);
-        resultLayout.setVisibility(View.GONE);
-
-        new Thread(() -> {
-            final String result = leafCareAI.analyzeImage(currentImage);
-            requireActivity().runOnUiThread(() -> {
-                loadingText.setVisibility(View.GONE);
-                displayResult(result);
-            });
-        }).start();
     }
 
-    private void displayResult(String result) {
-        resultText.setText(result);
-        if (result.contains("Bình thường")) {
-            resultLayout.setBackgroundColor(0xFF4CAF50); // xanh lá
-            resultText.setTextColor(0xFFFFFFFF);
+    /**
+     * AsyncTask để chạy AI mà không block UI
+     */
+    private class AnalyzeTask extends AsyncTask<Bitmap, Void, String> {
+        private Bitmap bitmap;
+
+        @Override
+        protected String doInBackground(Bitmap... bitmaps) {
+            bitmap = bitmaps[0];
+            return leafCareAI.analyzeImage(bitmap);
+        }
+
+        @Override
+        protected void onPostExecute(String aiResult) {
+            analysisStatus.setVisibility(View.GONE); // ẩn trạng thái
+            resultLayout.setVisibility(View.VISIBLE);
+
+            boolean isHealthy = aiResult.contains("🌱");
+            String diseaseType = aiResult
+                    .replace("🌱 Bình thường - Lá cây khỏe mạnh!", "")
+                    .replace("🔴 Phát hiện bệnh: ", "")
+                    .replace("\nCần xử lý ngay!", "")
+                    .trim();
+
+            displayResult(bitmap, isHealthy, diseaseType);
+        }
+    }
+
+    /**
+     * Hiển thị kết quả dưới dạng card động
+     */
+    public void displayResult(Bitmap bitmap, boolean isHealthy, String diseaseType) {
+        View resultView = getLayoutInflater().inflate(R.layout.result_item, resultLayout, false);
+
+        ImageView resultImage = resultView.findViewById(R.id.resultImage);
+        TextView resultTitle = resultView.findViewById(R.id.resultTitle);
+        TextView resultMessage = resultView.findViewById(R.id.resultMessage);
+        MaterialButton suggestionButton = resultView.findViewById(R.id.suggestionButton);
+
+        resultImage.setImageBitmap(bitmap);
+
+        if (isHealthy) {
+            resultTitle.setText("✅ Lá cây khỏe mạnh");
+            resultMessage.setText("Không phát hiện dấu hiệu bất thường.");
+            suggestionButton.setVisibility(View.GONE);
+            ((MaterialCardView) resultView).setCardBackgroundColor(0xFFE8F5E9); // xanh nhạt
         } else {
-            resultLayout.setBackgroundColor(0xFFF44336); // đỏ
-            resultText.setTextColor(0xFFFFFFFF);
+            resultTitle.setText("⚠️ Phát hiện bệnh");
+            resultMessage.setText(diseaseType);
+            suggestionButton.setVisibility(View.VISIBLE);
+
+            suggestionButton.setOnClickListener(v -> {
+                Intent intent = new Intent(requireContext(), HistoryDetailActivity.class);
+                intent.putExtra("diseaseName", diseaseType);
+                if (bitmap != null) {
+                    HistoryDatabaseHelper dbHelper = new HistoryDatabaseHelper(requireContext());
+                    String imagePath = dbHelper.saveTempImage(bitmap);
+                    intent.putExtra("imagePath", imagePath);
+                }
+                intent.putExtra("timestamp", String.valueOf(System.currentTimeMillis()));
+                startActivity(intent);
+            });
+
+            ((MaterialCardView) resultView).setCardBackgroundColor(0xFFFFEBEE); // đỏ nhạt
         }
-        resultLayout.setVisibility(View.VISIBLE);
 
-        var dbHelper = new HistoryDatabaseHelper(requireContext());
-        dbHelper.insertHistory(result, currentImage);
+        resultLayout.removeAllViews(); // xóa các kết quả cũ
+        resultLayout.addView(resultView);
 
+        // Lưu lịch sử
+        HistoryDatabaseHelper dbHelper = new HistoryDatabaseHelper(requireContext());
+        dbHelper.insertHistory(diseaseType, bitmap);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (leafCareAI != null) {
+            leafCareAI.release();
+        }
     }
 }

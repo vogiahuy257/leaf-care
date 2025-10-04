@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class HistoryDatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_IMAGE_PATH = "image_path";
     private static final String COLUMN_TIMESTAMP = "timestamp";
 
-    private Context context;
+    private final Context context;
 
     public HistoryDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -46,6 +47,10 @@ public class HistoryDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void insertHistory(String result, Bitmap image) {
+        insertHistory(result, image, String.valueOf(System.currentTimeMillis()));
+    }
+
+    public void insertHistory(String result, Bitmap image, String timestamp) {
         String fileName = "history_" + System.currentTimeMillis() + ".png";
         File file = new File(context.getFilesDir(), fileName);
 
@@ -55,8 +60,6 @@ public class HistoryDatabaseHelper extends SQLiteOpenHelper {
             e.printStackTrace();
         }
 
-        String timestamp = String.valueOf(System.currentTimeMillis());
-
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_RESULT, result);
@@ -64,16 +67,35 @@ public class HistoryDatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_TIMESTAMP, timestamp);
 
         db.insert(TABLE_HISTORY, null, values);
-        db.close();
     }
 
-    // Xóa 1 record trong database theo ID
+    // ✅ Lưu ảnh tạm (không ghi DB)
+    public String saveTempImage(Bitmap image) {
+        String fileName = "temp_" + System.currentTimeMillis() + ".png";
+        File file = new File(context.getFilesDir(), fileName);
+
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            image.compress(Bitmap.CompressFormat.PNG, 100, fos);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return file.getAbsolutePath();
+    }
+
+    // ✅ Xóa 1 record
     public void deleteHistory(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_HISTORY, COLUMN_ID + "=?", new String[]{String.valueOf(id)});
-        db.close();
     }
 
+    // ✅ Xóa tất cả lịch sử
+    public void clearAllHistory() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_HISTORY, null, null);
+    }
+
+    // ✅ Lấy toàn bộ lịch sử
     public List<HistoryItem> getAllHistory() {
         List<HistoryItem> list = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
@@ -90,10 +112,27 @@ public class HistoryDatabaseHelper extends SQLiteOpenHelper {
             }
             cursor.close();
         }
-        db.close();
         return list;
     }
 
+    // ✅ Lấy 1 lịch sử theo ID
+    public HistoryItem getHistoryById(int id) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(TABLE_HISTORY, null, COLUMN_ID + "=?",
+                new String[]{String.valueOf(id)}, null, null, null);
+
+        HistoryItem item = null;
+        if (cursor != null && cursor.moveToFirst()) {
+            String result = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_RESULT));
+            String imagePath = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_IMAGE_PATH));
+            String timestamp = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TIMESTAMP));
+            item = new HistoryItem(id, result, imagePath, timestamp);
+            cursor.close();
+        }
+        return item;
+    }
+
+    // ✅ Load ảnh từ path
     public Bitmap loadImage(String path) {
         return BitmapFactory.decodeFile(path);
     }

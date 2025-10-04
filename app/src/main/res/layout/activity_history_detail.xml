@@ -1,89 +1,118 @@
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@android:color/background_light">
 
     <!-- Nội dung cuộn -->
     <ScrollView
         android:id="@+id/scrollContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/btnExit">
+        android:layout_above="@+id/btnExit"
+        android:padding="16dp"
+        android:clipToPadding="false">
 
-        <!-- phần nội dung bên trong -->
-        <com.google.android.material.card.MaterialCardView
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="6dp">
+            android:gravity="center_horizontal">
 
-            <LinearLayout
-                android:orientation="vertical"
+            <!-- Thẻ chứa kết quả -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="32dp"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="8dp">
 
-                <!-- Ảnh bo góc trên -->
-                <ImageView
-                    android:id="@+id/detailImage"
-                    android:layout_width="match_parent"
-                    android:layout_height="221dp"
-                    android:adjustViewBounds="true"
-                    android:background="@drawable/rounded_top"
-                    android:scaleType="centerCrop" />
-
-                <!-- Phần thông tin -->
                 <LinearLayout
                     android:orientation="vertical"
-                    android:padding="16dp"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/rounded_bottom">
+                    android:layout_height="wrap_content">
 
-                    <TextView
-                        android:id="@+id/detailResult"
-                        android:text="Kết quả bệnh"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                    <!-- Ảnh bệnh với bo góc -->
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/detailImage"
+                        android:layout_width="match_parent"
+                        android:layout_height="220dp"
+                        android:scaleType="centerCrop"
+                        android:contentDescription="Ảnh chi tiết bệnh"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Material3.Corner.Top" />
 
-                    <TextView
-                        android:id="@+id/detailTimestamp"
-                        android:text="Thời gian"
-                        android:textSize="14sp"
-                        android:textColor="#666"
-                        android:layout_marginTop="4dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                    <!-- Nội dung -->
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="20dp"
+                        android:background="@android:color/white">
 
-                    <TextView
-                        android:id="@+id/detailAdvice"
-                        android:text="Hướng dẫn xử lý"
-                        android:textSize="16sp"
-                        android:layout_marginTop="12dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        <!-- Kết quả bệnh -->
+                        <TextView
+                            android:id="@+id/detailResult"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Bệnh phấn trắng"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:textColor="@android:color/black" />
 
+                        <TextView
+                            android:id="@+id/detailTimestamp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:drawablePadding="6dp"
+                            android:text="03/10/2025 15:43"
+                            android:textSize="14sp"
+                            android:textColor="@android:color/darker_gray" />
+
+                        <!-- Divider -->
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginVertical="14dp"
+                            android:background="@android:color/darker_gray" />
+
+                        <!-- Gợi ý xử lý -->
+                        <TextView
+                            android:id="@+id/detailAdvice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:drawablePadding="6dp"
+                            android:text="Gợi ý xử lý"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@android:color/holo_blue_dark" />
+
+                        <TextView
+                            android:id="@+id/detailTreatment"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:lineSpacingExtra="6dp"
+                            android:textSize="15sp"
+                            android:textColor="@android:color/black" />
+                    </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
-
-        </com.google.android.material.card.MaterialCardView>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
     </ScrollView>
 
-    <!-- Nút Thoát hình tròn -->
-    <Button
+    <!-- Nút FAB thoát -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnExit"
-        android:layout_width="76dp"
-        android:layout_height="76dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="48dp"
-        android:background="@drawable/bg_circle"
-        android:text="X"
-        android:textSize="20sp"/>
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="80dp"
+        android:contentDescription="Thoát"
+        app:backgroundTint="@android:color/holo_red_dark"
+        app:srcCompat="@drawable/ic_close"
+        app:tint="@android:color/white" />
+
 </RelativeLayout>
-
-

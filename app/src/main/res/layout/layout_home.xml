@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/white"
     android:fillViewport="true">
 
@@ -37,7 +37,7 @@
             android:textColor="@color/black"
             android:textSize="16sp" />
 
-        <!-- Steps Card -->
+        <!-- Các bước hướng dẫn -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -139,79 +139,50 @@
                         android:textSize="13sp"
                         android:textColor="@color/black" />
                 </LinearLayout>
-
             </LinearLayout>
-
-
         </androidx.cardview.widget.CardView>
 
-        <!-- Image preview -->
-        <ImageView
-            android:id="@+id/imagePreview"
-            android:layout_width="match_parent"
-            android:layout_height="220dp"
-            android:background="#E0E0E0"
-            android:scaleType="centerCrop"
-            android:visibility="gone"
-            android:layout_marginBottom="16dp"
-            android:contentDescription="Preview ảnh" />
-
-        <!-- Loading text -->
+        <!-- TextView hiển thị trạng thái phân tích -->
         <TextView
-            android:id="@+id/loadingText"
+            android:id="@+id/analysisStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="12dp"
-            android:text="🤖 AI đang phân tích..."
-            android:textColor="@color/teal_700"
-            android:textSize="15sp"
-            android:visibility="gone" />
+            android:text="🤖 đang chuẩn đoán..."
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:layout_marginTop="16dp"
+            android:visibility="gone"
+            android:gravity="center" />
 
-        <!-- Result layout -->
+        <!-- LinearLayout chứa các kết quả -->
         <LinearLayout
             android:id="@+id/resultLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:orientation="vertical"
-            android:padding="12dp"
-            android:visibility="gone">
+            android:visibility="gone"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"/>
 
-            <TextView
-                android:id="@+id/resultText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="12dp"
-                android:textColor="@color/black"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <!-- Main Action Button -->
+        <!-- Button Camera & Gallery -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/cameraButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="📷 Chụp Ảnh"
+            android:text="Chụp Ảnh"
             android:textColor="@color/white"
             android:backgroundTint="@color/primary_green"
-            app:cornerRadius="24dp"
-            android:padding="12dp"
-            style="@style/Widget.MaterialComponents.Button"/>
+            android:layout_marginTop="16dp"
+            app:cornerRadius="24dp"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/galleryButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="🖼️ Chọn ảnh"
+            android:text="Chọn ảnh"
             android:textColor="@color/white"
             android:backgroundTint="@color/teal_700"
-            app:cornerRadius="24dp"
-            android:padding="12dp"
-            style="@style/Widget.MaterialComponents.Button"/>
-
-
+            android:layout_marginTop="8dp"
+            app:cornerRadius="24dp"/>
     </LinearLayout>
 </ScrollView>
