@@ -1,134 +1,183 @@
 package com.example.green;
 
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
+import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.List;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 
-public class HistoryFragment extends Fragment {
+import java.io.IOException;
 
-    // Thành phần giao diện hiển thị danh sách lịch sử
-    private RecyclerView recyclerView;
+public class HomeFragment extends Fragment {
 
-    // Adapter hiển thị từng HistoryItem trong RecyclerView
-    private HistoryAdapter adapter;
+    private LinearLayout resultLayout;
+    private MaterialButton cameraButton, galleryButton;
+    private Bitmap currentImage;
+    private LeafCareAI leafCareAI;
+    private TextView analysisStatus;
 
-    // Trợ lý truy cập CSDL SQLite
-    private HistoryDatabaseHelper dbHelper;
-
-    // Danh sách các bản ghi lịch sử lấy từ database
-    private List<HistoryItem> historyList;
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int REQUEST_IMAGE_PICK = 2;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        // Ánh xạ layout XML thành View thực tế (layout_history.xml)
-        View view = inflater.inflate(R.layout.layout_history, container, false);
+        View view = inflater.inflate(R.layout.layout_home, container, false);
 
-        // Gắn RecyclerView từ layout
-        recyclerView = view.findViewById(R.id.historyRecyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        // Ánh xạ
+        resultLayout = view.findViewById(R.id.resultLayout);
+        cameraButton = view.findViewById(R.id.cameraButton);
+        galleryButton = view.findViewById(R.id.galleryButton);
+        analysisStatus = view.findViewById(R.id.analysisStatus);
 
-        // Khởi tạo database helper để truy xuất dữ liệu
-        dbHelper = new HistoryDatabaseHelper(requireContext());
+        // Khởi tạo mô hình AI
+        leafCareAI = new LeafCareAI(requireContext());
 
-        // Lấy toàn bộ danh sách lịch sử từ database
-        historyList = dbHelper.getAllHistory();
+        // Nút Camera
+        cameraButton.setOnClickListener(v -> openCamera());
 
-        // Khởi tạo adapter và gán vào RecyclerView
-        adapter = new HistoryAdapter(requireContext(), historyList);
-        recyclerView.setAdapter(adapter);
-
-        // Gắn tính năng vuốt để xóa từng item
-        attachSwipeToDelete();
+        // Nút Gallery
+        galleryButton.setOnClickListener(v -> openGallery());
 
         return view;
     }
 
-    /**
-     * Thiết lập hành vi vuốt sang trái để xóa một mục trong danh sách.
-     */
-    private void attachSwipeToDelete() {
-        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(
-                0, // Không hỗ trợ kéo lên/xuống
-                ItemTouchHelper.LEFT // Chỉ hỗ trợ vuốt sang trái để xóa
-        ) {
-            @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView,
-                                  @NonNull RecyclerView.ViewHolder viewHolder,
-                                  @NonNull RecyclerView.ViewHolder target) {
-                // Không cho phép kéo để sắp xếp lại
-                return false;
-            }
+    private void openCamera() {
+        Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePicture.resolveActivity(requireActivity().getPackageManager()) != null) {
+            startActivityForResult(takePicture, REQUEST_IMAGE_CAPTURE);
+        }
+    }
 
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                // Lấy vị trí item vừa bị vuốt
-                int position = viewHolder.getAdapterPosition();
+    private void openGallery() {
+        Intent pickPhoto = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(pickPhoto, REQUEST_IMAGE_PICK);
+    }
 
-                // Lấy ID của item đó trong database
-                int id = historyList.get(position).getId();
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-                // Xóa bản ghi trong database
-                dbHelper.deleteHistory(id);
-
-                // Xóa item khỏi danh sách hiện tại
-                historyList.remove(position);
-
-                // Cập nhật lại RecyclerView để ẩn item bị xóa
-                adapter.notifyItemRemoved(position);
-            }
-
-            @Override
-            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView,
-                                    @NonNull RecyclerView.ViewHolder viewHolder,
-                                    float dX, float dY, int actionState, boolean isCurrentlyActive) {
-
-                // Lấy view tương ứng với item
-                View itemView = viewHolder.itemView;
-                Paint paint = new Paint();
-
-                if (dX < 0) { // Nếu vuốt sang trái
-                    // Vẽ nền đỏ báo hiệu xóa
-                    paint.setColor(Color.RED);
-                    c.drawRect((float) itemView.getRight() + dX, (float) itemView.getTop(),
-                            (float) itemView.getRight(), (float) itemView.getBottom(), paint);
-
-                    // Vẽ biểu tượng thùng rác
-                    Drawable icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_delete);
-                    if (icon != null) {
-                        int iconMargin = (itemView.getHeight() - icon.getIntrinsicHeight()) / 2;
-                        int iconTop = itemView.getTop() + iconMargin;
-                        int iconBottom = iconTop + icon.getIntrinsicHeight();
-                        int iconLeft = itemView.getRight() - iconMargin - icon.getIntrinsicWidth();
-                        int iconRight = itemView.getRight() - iconMargin;
-
-                        icon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
-                        icon.draw(c);
-                    }
+        if (resultCode == Activity.RESULT_OK && data != null) {
+            Bitmap bitmap = null;
+            if (requestCode == REQUEST_IMAGE_CAPTURE) {
+                bitmap = (Bitmap) data.getExtras().get("data");
+            } else if (requestCode == REQUEST_IMAGE_PICK) {
+                Uri selectedImage = data.getData();
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), selectedImage);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-
-                // Gọi phương thức gốc để tiếp tục xử lý hiệu ứng vuốt
-                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
             }
-        };
 
-        // Gắn ItemTouchHelper vào RecyclerView để kích hoạt hành vi vuốt
-        new ItemTouchHelper(simpleCallback).attachToRecyclerView(recyclerView);
+            if (bitmap != null) {
+                currentImage = bitmap;
+                // Hiển thị trạng thái phân tích
+                analysisStatus.setVisibility(View.VISIBLE);
+                resultLayout.setVisibility(View.GONE);
+
+                // Chạy AI trên background thread
+                new AnalyzeTask().execute(bitmap);
+            }
+        }
+    }
+
+    /**
+     * AsyncTask để chạy AI mà không block UI
+     */
+    private class AnalyzeTask extends AsyncTask<Bitmap, Void, String> {
+        private Bitmap bitmap;
+
+        @Override
+        protected String doInBackground(Bitmap... bitmaps) {
+            bitmap = bitmaps[0];
+            return leafCareAI.analyzeImage(bitmap);
+        }
+
+        @Override
+        protected void onPostExecute(String aiResult) {
+            analysisStatus.setVisibility(View.GONE); // ẩn trạng thái
+            resultLayout.setVisibility(View.VISIBLE);
+
+            boolean isHealthy = aiResult.contains("🌱");
+            String diseaseType = aiResult
+                    .replace("🌱 Bình thường - Lá cây khỏe mạnh!", "")
+                    .replace("🔴 Phát hiện bệnh: ", "")
+                    .replace("\nCần xử lý ngay!", "")
+                    .trim();
+
+            displayResult(bitmap, isHealthy, diseaseType, aiResult);
+        }
+    }
+
+    /**
+     * Hiển thị kết quả dưới dạng card động
+     */
+    public void displayResult(Bitmap bitmap, boolean isHealthy, String diseaseType, String aiResult) {
+        View resultView = getLayoutInflater().inflate(R.layout.result_item, resultLayout, false);
+
+        ImageView resultImage = resultView.findViewById(R.id.resultImage);
+        TextView resultTitle = resultView.findViewById(R.id.resultTitle);
+        TextView resultMessage = resultView.findViewById(R.id.resultMessage);
+        MaterialButton suggestionButton = resultView.findViewById(R.id.suggestionButton);
+
+        resultImage.setImageBitmap(bitmap);
+
+        if (isHealthy) {
+            resultTitle.setText("✅ Lá cây khỏe mạnh");
+            resultMessage.setText("Chỉ cần chăm sóc bình thường thôi!");
+            suggestionButton.setVisibility(View.GONE);
+            ((MaterialCardView) resultView).setCardBackgroundColor(0xFFE8F5E9); // xanh nhạt
+        } else {
+            resultTitle.setText("⚠️ Phát hiện bệnh");
+            resultMessage.setText(diseaseType);
+            suggestionButton.setVisibility(View.VISIBLE);
+
+            suggestionButton.setOnClickListener(v -> {
+                Intent intent = new Intent(requireContext(), HistoryDetailActivity.class);
+                intent.putExtra("diseaseName", diseaseType);
+                if (bitmap != null) {
+                    HistoryDatabaseHelper dbHelper = new HistoryDatabaseHelper(requireContext());
+                    String imagePath = dbHelper.saveTempImage(bitmap);
+                    intent.putExtra("imagePath", imagePath);
+                }
+                intent.putExtra("timestamp", String.valueOf(System.currentTimeMillis()));
+                startActivity(intent);
+            });
+
+            ((MaterialCardView) resultView).setCardBackgroundColor(0xFFFFEBEE); // đỏ nhạt
+        }
+
+        resultLayout.removeAllViews(); // xóa các kết quả cũ
+        resultLayout.addView(resultView);
+
+        // ================== Lưu lịch sử ==================
+        HistoryDatabaseHelper dbHelper = new HistoryDatabaseHelper(requireContext());
+        dbHelper.insertHistory(aiResult, bitmap); // <-- Lưu toàn bộ kết quả, kể cả lá khỏe mạnh
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (leafCareAI != null) {
+            leafCareAI.release();
+        }
     }
 }
