@@ -1,6 +1,10 @@
 package com.example.green;
 
 import android.animation.ValueAnimator;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -14,8 +18,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,7 +38,29 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
+        SharedPreferences prefs = getSharedPreferences("AppSettings", MODE_PRIVATE);
+        boolean isEnglish = prefs.getBoolean("english", false);
+        boolean isDark = prefs.getBoolean("dark_mode", false);
+
+
+
+        AppCompatDelegate.setDefaultNightMode(
+                isDark ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
+        );
+        // Set language
+        Locale locale = new Locale(isEnglish ? "en" : "vi");
+        Locale.setDefault(locale);
+        Resources res = getResources();
+        Configuration config = new Configuration(res.getConfiguration());
+        config.setLocale(locale);
+        res.updateConfiguration(config, res.getDisplayMetrics());
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
         setContentView(R.layout.activity_main);
 
         // Load AI model 1 lần
@@ -45,15 +74,12 @@ public class MainActivity extends AppCompatActivity {
         chatContent = findViewById(R.id.chatContent);
         indicator = findViewById(R.id.indicator);
         containerChatBot = findViewById(R.id.containerChatBot);
-        settingPanel = findViewById(R.id.settingPanel);
         bottomContainer = findViewById(R.id.bottomContainer);
         loadingOverlay = findViewById(R.id.loadingOverlay);
 
         tvHome = findViewById(R.id.tvHome);
         tvHistory = findViewById(R.id.tvHistory);
         tvSetting = findViewById(R.id.tvSetting);
-
-        settingPanel.setVisibility(View.GONE);
 
         // Fix Bottom Navigation tránh navigation bar
         bottomContainer.setOnApplyWindowInsetsListener((v, insets) -> {
@@ -102,13 +128,15 @@ public class MainActivity extends AppCompatActivity {
             setActiveTab(tvSetting);
             showLoading();
             moveIndicator(v, () -> {
-                settingPanel.setVisibility(settingPanel.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);
+                replaceFragment(new SettingFragment());
                 hideLoading();
             });
         });
 
+
         // ChatBot click
         chatButton.setOnClickListener(this::toggleChatBot);
+
     }
 
     /** Replace fragment ngay lập tức */
@@ -209,14 +237,28 @@ public class MainActivity extends AppCompatActivity {
 
     /** Set active tab ngay lập tức */
     private void setActiveTab(TextView activeTv) {
-        int colorActive = Color.parseColor("#000000"); // đen
-        int colorInactive = Color.parseColor("#888888"); // xám
-        TextView[] tvs = {tvHome, tvHistory, tvSetting};
+        boolean isNightMode = (getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
 
+        int colorActive;
+        int colorInactive;
+
+        if (isNightMode) {
+            // Màu sáng hơn khi ở chế độ tối
+            colorActive = Color.parseColor("#FFFFFF");  // trắng
+            colorInactive = Color.parseColor("#BBBBBB"); // xám nhạt
+        } else {
+            // Màu tối hơn khi ở chế độ sáng
+            colorActive = Color.parseColor("#000000");  // đen
+            colorInactive = Color.parseColor("#888888"); // xám
+        }
+
+        TextView[] tvs = {tvHome, tvHistory, tvSetting};
         for (TextView tv : tvs) {
             tv.setTextColor(tv == activeTv ? colorActive : colorInactive);
         }
     }
+
 
     /** Getter cho LeafCareAI */
     public LeafCareAI getLeafCareAI() {

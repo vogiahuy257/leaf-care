@@ -46,7 +46,7 @@
             android:id="@+id/suggestionButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Xem gợi ý"
+            android:text="@string/view_suggestions"
             android:textColor="@color/white"
             android:backgroundTint="@color/primary_green"
             app:cornerRadius="24dp"/>

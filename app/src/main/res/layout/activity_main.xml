@@ -41,7 +41,7 @@
                 android:id="@+id/tvHome"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Home"
+                android:text="@string/home"
                 android:textColor="#888888"
                 android:textSize="12sp" />
         </LinearLayout>
@@ -63,7 +63,7 @@
                 android:id="@+id/tvHistory"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="History"
+                android:text="@string/history"
                 android:textColor="#888888"
                 android:textSize="12sp" />
         </LinearLayout>
@@ -85,7 +85,7 @@
                 android:id="@+id/tvSetting"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Setting"
+                android:text="@string/setting"
                 android:textColor="#888888"
                 android:textSize="12sp" />
         </LinearLayout>
@@ -173,36 +173,6 @@
                     android:text="Gửi"/>
             </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
-
-    <!-- Setting Panel -->
-    <LinearLayout
-        android:id="@+id/settingPanel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/white"
-        android:elevation="4dp"
-        android:visibility="gone"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_margin="16dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Option 1"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:padding="8dp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Option 2"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:padding="8dp"/>
     </LinearLayout>
 
     <!-- Loading overlay -->
