@@ -17,7 +17,7 @@
     <string name="chatbot">Trợ lý ảo</string>
     <string name="enter_message">Nhập tin nhắn...</string>
     <string name="send">Gửi</string>
-
+    <string name="setting_text_lang">language</string>
     <string name="knowledge">Kiến thức cây trồng</string>
     <string name="settings">Cài đặt</string>
     <string name="capture_photo">Chụp ảnh</string>
@@ -39,4 +39,9 @@
         <item>Trắng</item>
         <item>Đen</item>
     </string-array>
+
+<string-array name="languages_array">
+    <item>Vietnamese</item>
+    <item>English</item>
+</string-array>
 </resources>

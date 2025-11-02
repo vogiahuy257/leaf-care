@@ -16,13 +16,18 @@
         android:textColor="@color/black"
         android:layout_marginBottom="16dp" />
 
-    <Switch
-        android:id="@+id/switchLanguage"
+    <TextView
+        android:id="@+id/textLang"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/setting_text_lang"
+        android:textSize="14sp"
+        android:textColor="@color/black" />
+    <Spinner
+        android:id="@+id/spinnerLanguage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/language"
-        android:textColor="@color/black"
-        android:padding="8dp" />
+        android:padding="8dp" android:layout_marginBottom="16dp"/>
 
     <Switch
         android:id="@+id/switchTheme"

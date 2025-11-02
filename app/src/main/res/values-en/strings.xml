@@ -32,8 +32,13 @@
     <string name="theme_dark">Dark</string>
     <string name="language">English / Vietnamese</string>
     <string name="result">Kết quả</string>
+    <string name="setting_text_lang">Ngôn ngữ</string>
     <string-array name="background_options">
         <item>White</item>
         <item>Black</item>
     </string-array>
+    <string-array name="languages_array">
+    <item>Vietnamese</item>
+    <item>English</item>
+</string-array>
 </resources>
