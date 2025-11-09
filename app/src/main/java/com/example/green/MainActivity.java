@@ -21,6 +21,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.os.SystemClock;
 
 import java.util.Locale;
 
@@ -45,8 +49,6 @@ public class MainActivity extends AppCompatActivity {
         boolean isEnglish = prefs.getBoolean("english", false);
         boolean isDark = prefs.getBoolean("dark_mode", false);
 
-
-
         AppCompatDelegate.setDefaultNightMode(
                 isDark ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
         );
@@ -62,6 +64,17 @@ public class MainActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
         setContentView(R.layout.activity_main);
+
+        // ✅ Test đặt nhắc nhở sau 10 giây (để dễ thấy)
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        Intent intent = new Intent(this, ReminderReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+
+        long triggerTime = SystemClock.elapsedRealtime() + 10 * 1000L; // 10 giây sau
+
+        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerTime, pendingIntent);
+        // cái nàyde963e debug
+//        scheduleReminder(3); // Nhắc người dùng sau 3 ngày
 
         // Load AI model 1 lần
         leafCareAI = new LeafCareAI(this);
@@ -144,6 +157,18 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.containerLayout, fragment);
         transaction.commitNow(); // commit ngay để loading chạy song song
+    }
+
+
+    // Hàm đặt nhắc nhở
+    private void scheduleReminder(int daysLater) {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        Intent intent = new Intent(this, ReminderReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+
+        long triggerTime = SystemClock.elapsedRealtime() + daysLater * 24 * 60 * 60 * 1000L; // X ngày sau
+
+        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerTime, pendingIntent);
     }
 
     /** Move indicator dưới nút */
